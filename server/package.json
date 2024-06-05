@@ -1,0 +1,37 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Proyecto de prueba Administrador de recibos",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon -r esm src/index.js",
+    "test": "jest --detectOpenHandles",
+    "test:coverage": "npm run pretest && jest --detectOpenHandles --coverage",
+    "pretest": "./src/data --clear"
+  },
+  "author": "Alan Aguilar",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.0.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1621.0",
+    "bcrypt": "^5.1.1",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "esm": "^3.2.25",
+    "express": "^4.19.2",
+    "express-fileupload": "^1.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.11.5",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "validate": "^5.2.0"
+  }
+}

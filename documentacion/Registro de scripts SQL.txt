@@ -1,0 +1,69 @@
+/* Creación de base de datos "receipt" */
+CREATE DATABASE receipt
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LOCALE_PROVIDER = 'libc'
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
+/* Crear tabla user */
+CREATE TABLE "user" (
+    id UUID DEFAULT gen_random_uuid(),
+	"fullName" VARCHAR(100) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	password VARCHAR(150) NOT NULL,
+	"phoneNumber" VARCHAR(20),
+	"profileImg" VARCHAR(150),
+	"createdDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	"updatedDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT "pkUser" PRIMARY KEY (id)
+);
+
+/* Crear tabla receipt */
+CREATE TABLE "receipt" (
+    id SERIAL,
+	"userId" UUID NOT NULL,
+	provider VARCHAR(50) NOT NULL,
+	title VARCHAR(50) NOT NULL,
+	"receiptType" VARCHAR(50),
+	comments VARCHAR(100),
+	amount NUMERIC(6,2),
+	badge VARCHAR(50),
+	"receiptDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	"createdDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	"updatedDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT "pkReceipt" PRIMARY KEY (id),
+	CONSTRAINT "fkuserId" FOREIGN KEY("userId") REFERENCES "user"(id)
+);
+
+/* Crear tabla token */
+CREATE TABLE "token" (
+    id SERIAL,
+	"userId" UUID NOT NULL,
+	token VARCHAR(300) NOT NULL,
+	"createdDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	"updatedDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT "pkToken" PRIMARY KEY (id),
+	CONSTRAINT "fkUserId" FOREIGN KEY("userId") REFERENCES "user"(id)
+);
+
+DROP TABLE public."token";
+
+/* Inserar un usuario por defecto en tabla "user" */
+INSERT INTO "user"("id", "fullName", "email", "password", "phoneNumber", "profileImg", "createdDate", "updatedDate") VALUES (DEFAULT, 'Moisés Fernández Castillo', 'mfernandez@email.com', '$2b$10$kfw5HIf2YVle4luVlmNaWuruDXFnQof7L8.FUhSUg8I8EE0MnY91a', '8119123445', 'foto-perfil.jpg', DEFAULT, DEFAULT);
+
+/* Inserar un recibos por defecto en tabla "receipt" */
+INSERT INTO "receipt"("id", "userId", "provider", "title", "receiptType", "comments", "amount", "badge", "receiptDate", "createdDate", "updatedDate") VALUES (DEFAULT, '1ede4103-d8fa-478a-87ce-ed0c2c9ac851', 'Coca-Cola', 'Compra de caja de refrescos', 'Alimentos y bebidas', 'Se compra una caja con 30 refrescos de 2 litros', 1000, 'MXN', '2024-05-15', DEFAULT, DEFAULT);
+
+/* Inserar un recibos por defecto en tabla "token" */
+INSERT INTO "token"("id", "userId", "token", "createdDate", "updatedDate") VALUES (DEFAULT, '1ede4103-d8fa-478a-87ce-ed0c2c9ac851', 'asd123.asd123.asd123', DEFAULT, DEFAULT);
+
+/* Agregar campo "receiptImg" a la tabla "receipt" */
+ALTER TABLE public.receipt ADD COLUMN "receiptImg" VARCHAR(150);
+
+/* Agregar constraint para agregar filtro de valor único a columna "email" tabla "user" */
+ALTER TABLE public.user ADD CONSTRAINT "constEmailUnique" UNIQUE (email);
+
+/* Actualizar el tamaño máximo para la columna "token" tabla "token" */
+ALTER TABLE "token" ALTER COLUMN "token" TYPE varchar(300);
