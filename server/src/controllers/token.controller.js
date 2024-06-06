@@ -26,7 +26,7 @@ class TokenController {
             if (!userExist) return res.status(400).json(responseUtil('¡Email or password invalid!', {}))
 
             const validPassword = await validatePassword(password, userExist.password)
-            if (!validPassword) return res.status(400).json(responseUtil(400, '¡Email or password invalid!', {}))
+            if (!validPassword) return res.status(400).json(responseUtil('¡Email or password invalid!', {}))
 
             const newToken = generateNewToken(userExist.id, userExist.email)
 

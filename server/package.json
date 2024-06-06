@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -r esm src/index.js",
-    "test": "jest --detectOpenHandles",
-    "test:coverage": "npm run pretest && jest --detectOpenHandles --coverage",
-    "pretest": "./src/data --clear"
+    "test": "jest --detectOpenHandles"
   },
   "author": "Alan Aguilar",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.24.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.7",
+    "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.0",
     "supertest": "^7.0.0"
