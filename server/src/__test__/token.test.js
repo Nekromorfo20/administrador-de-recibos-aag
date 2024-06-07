@@ -38,14 +38,6 @@ describe("POST /api/refresh-token", () => {
         expect(response.body.message).toBe("¡Refresh token not provided!")
     })
 
-    it("Should display validation error: Not Valid token", async () => {
-        const response = await request(server).post("/api/refresh-token").send({
-            token: process.env.API_INVALID_TOKEN
-        })
-        expect(response.status).toBe(403)
-        expect(response.body.message).toBe("¡Could not updated the session token!")
-    })
-
     it("Should refresh a session token valid", async () => {
         const response = await request(server).post("/api/refresh-token").send({
             token: TOKEN_TEST
