@@ -1,4 +1,4 @@
-import sequelize from "../connectionDB"
+import sequelize from "../configs/connectionDB"
 import { UserModel, TokenModel } from "../models"
 import { responseUtil } from "../utils"
 import { UserValidator } from "../validators"
