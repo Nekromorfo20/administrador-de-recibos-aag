@@ -1,4 +1,4 @@
-import sequelize from "../connectionDB"
+import sequelize from "../configs/connectionDB"
 import { TokenModel, UserModel } from "../models"
 import { UserValidator } from "../validators"
 import { responseUtil, validatePassword, generateNewToken, checkToken } from "../utils"
@@ -62,6 +62,8 @@ class TokenController {
     async refreshToken (req, res) {
         const { token } = req.body
 
+        if (!token) return res.status(404).json(responseUtil('¡Refresh token not provided!', {}))
+
         const trans = await sequelize.transaction()
 
         try {
@@ -101,7 +103,6 @@ class TokenController {
         try {
 
             const tokenExist = await TokenModel.findOne({ where: { userId } })
-            if (!tokenExist) return res.status(403).json(responseUtil('¡Could not updated the session token!', {}))
 
             await TokenModel.update({
                 token: "",

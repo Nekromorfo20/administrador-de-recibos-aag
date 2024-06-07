@@ -1,4 +1,4 @@
-import sequelize from "../connectionDB"
+import sequelize from "../configs/connectionDB"
 import { ReceiptModel } from "../models"
 import { responseUtil, AWSUtil, generateRandomImageName } from "../utils"
 import { ReceiptValidator } from "../validators"
