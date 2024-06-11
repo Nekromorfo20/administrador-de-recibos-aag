@@ -1,5 +1,5 @@
 import sequelize from "../configs/connectionDB"
-import { UserModel, TokenModel } from "../models"
+import { UserModel, TokenModel, ReceiptModel } from "../models"
 import { responseUtil } from "../utils"
 import { UserValidator } from "../validators"
 import { encryptPassword, AWSUtil, generateRandomImageName } from "../utils"
@@ -57,7 +57,7 @@ class UserController {
             if (req.files) {
                 const { profileImg } = req.files
                 pathAWS = `${process.env.AWS_S3_BUCKET_PROFILE}/${generateRandomImageName(profileImg.name)}`
-                const uploadFile = await awsUtil.uploadeBucketObject(pathAWS, profileImg.data)
+                const uploadFile = await awsUtil.uploadePublicBucketObject(pathAWS, profileImg.data)
                 if (!uploadFile || !uploadFile.fileObject) throw new Error("¡The file cannot be uploaded in AWS!")
             }
 
@@ -102,7 +102,7 @@ class UserController {
             if (req.files) {
                 const { profileImg } = req.files
                 pathAWS = `${process.env.AWS_S3_BUCKET_PROFILE}/${generateRandomImageName(profileImg.name)}`
-                const uploadFile = await awsUtil.uploadeBucketObject(pathAWS, profileImg.data)
+                const uploadFile = await awsUtil.uploadePublicBucketObject(pathAWS, profileImg.data)
                 if (!uploadFile || !uploadFile.fileObject) throw new Error("¡The file cannot be uploaded in AWS!")
 
                 if (userExist.profileImg !== "") await awsUtil.deleteBucketObject(userExist.profileImg)
@@ -164,6 +164,58 @@ class UserController {
         } catch (error) {
             console.log(error)
             await trans.rollback()
+            return res.status(500).json(responseUtil('¡Server error!', {}))
+        }
+    }
+
+    /**
+    * @author Alan Aguilar
+    * @description Method for delete an user and their receipts
+    * @date 11-06-2024
+    * @return Object
+    * @memberof UserController
+    */
+    async deleteUser (req, res) {
+        const { userId } = req.user
+
+        const trans = await sequelize.transaction()
+        const awsUtil = new AWSUtil()
+
+        try {
+            const userExist = await UserModel.findByPk(userId)
+
+            const receipts = await ReceiptModel.findAll({ where: { userId: userExist.id } })
+            const sessionToken = await TokenModel.findOne({ where: { userId: userExist.id } })
+
+            const receiptIds = receipts.map(receipt => receipt.id)
+
+            await ReceiptModel.destroy({ where: { id: receiptIds }, transaction: trans })
+            await TokenModel.destroy({ where: { id: sessionToken.id }, transaction: trans })
+            await UserModel.destroy({ where: { id: userExist.id }, transaction: trans })
+
+            await awsUtil.deleteBucketDirectory(`${process.env.AWS_S3_BUCKET_RECEIPT}/${userExist.id}`)
+            if (userExist.profileImg !== "") await awsUtil.deleteBucketObject(userExist.profileImg)
+
+            await trans.commit()
+            return res.status(200).json(responseUtil('¡User and their receipts delete successfully!', {}))
+        } catch (error) {
+            console.log(error)
+            await trans.rollback()
+            return res.status(500).json(responseUtil('¡Server error!', {}))
+        }
+    }
+
+    async testDeleteDir (req, res) {
+        const { awsUrlDir } = req.body
+
+        const awsUtil = new AWSUtil()
+
+        try {
+            await awsUtil.deleteBucketDirectory(awsUrlDir)
+
+            return res.status(200).json(responseUtil('¡OK!', {}))
+        } catch (error) {
+            console.log(error)
             return res.status(500).json(responseUtil('¡Server error!', {}))
         }
     }

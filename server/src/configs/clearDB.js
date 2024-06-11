@@ -1,15 +1,14 @@
-import { exit } from "node:process"
 import colors from "colors"
 import db from "./connectionDB"
 
 const clearDB = async () => {
     try {
-        await db.sync({ force: true })
+        await db.sync({ force: true, alter: true })
         colors.bgYellow.bold("¡Database data clear successfully!")
-        exit(0)
+        process.exit(0)
     } catch (e) {
         console.log(e)
-        exit(1)
+        process.exit(1)
     }
 }
 
