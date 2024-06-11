@@ -85,8 +85,8 @@ class ReceiptController {
        try {
             if (req.files) {
                 const { receiptImg } = req.files
-                pathAWS = `${process.env.AWS_S3_BUCKET_RECEIPT}/${generateRandomImageName(receiptImg.name)}`
-                const uploadFile = await awsUtil.uploadeBucketObject(pathAWS, receiptImg.data)
+                pathAWS = `${process.env.AWS_S3_BUCKET_RECEIPT}/${userId}/${generateRandomImageName(receiptImg.name)}`
+                const uploadFile = await awsUtil.uploadePublicBucketObject(pathAWS, receiptImg.data)
                 if (!uploadFile || !uploadFile.fileObject) throw new Error("¡The file cannot be uploaded in AWS!")
             }
 
@@ -141,8 +141,8 @@ class ReceiptController {
 
             if (req.files) {
                 const { receiptImg } = req.files
-                pathAWS = `${process.env.AWS_S3_BUCKET_RECEIPT}/${generateRandomImageName(receiptImg.name)}`
-                const uploadFile = await awsUtil.uploadeBucketObject(pathAWS, receiptImg.data)
+                pathAWS = `${process.env.AWS_S3_BUCKET_RECEIPT}/${userId}/${generateRandomImageName(receiptImg.name)}`
+                const uploadFile = await awsUtil.uploadePublicBucketObject(pathAWS, receiptImg.data)
                 if (!uploadFile || !uploadFile.fileObject) throw new Error("¡The file cannot be uploaded in AWS!")
 
                 if (receipt.receiptImg !== "") await awsUtil.deleteBucketObject(receipt.receiptImg)

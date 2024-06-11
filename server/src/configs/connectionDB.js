@@ -12,7 +12,6 @@ const db = new Sequelize(
         dialect: ENV.API_DB_DIALECT,
         logging: (ENV.API_DB_LOGGING === "true"),
         operatorsAliases: ENV.API_DB_OPERATOR_ALIASES,
-        models: [__dirname + "/../models/**/*"],
         pool: {
             max: Number(ENV.API_DB_POOL_MAX),
             min: Number(ENV.API_DB_POOL_MIN),
