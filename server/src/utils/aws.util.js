@@ -64,44 +64,48 @@ class AWSUtil {
 
     /**
     * @author Alan Aguilar
-    * @description Method for delete a directoy image in AWS
-    * @date 11-06-2024
+    * @description Method for delete multiple existing files in AWS
+    * @date 13-06-2024
     * @return Object
     * @memberof AWSUtil
     */
-    async deleteBucketDirectory (dir) {
-        if (dir === '' || dir === '/' || dir === null) {
-            console.log('¡The url provided its empty or does not valid!')
+    async deleteBucketObjectsAndDir (filePathsAWS) {
+        if (filePathsAWS.length < 1) {
+            console.log('¡You must provided almost one object path!')
             return false
         }
 
-        const listParams = {
+        for (let i = 0; i < filePathsAWS.length; i++) {
+            if (filePathsAWS[i] === '' || filePathsAWS[i] === '/' || filePathsAWS[i] === null) {
+                console.log('¡Cannot send a empty url!')
+                return false
+            }
+        }
+
+        let pathObjects = []
+        for (let i = 0; i < filePathsAWS.length; i++) {
+            if (i === 0) {
+                let arrDir = filePathsAWS[i].split("/")
+                arrDir.pop()
+                const pathDir = `${arrDir.join("/")}/`
+                pathObjects.push({ Key: pathDir })
+            }
+            pathObjects.push({ Key: filePathsAWS[i] })
+        }
+
+        const awsS3Parameters = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Prefix: dir
+            Delete: {
+                Objects: pathObjects,
+            }
         }
 
         try {
-            const listedObjects = await this.awss3.listBuckets(listParams).promise()
-            if (listedObjects.Contents.length === 0) {
-                console.log('¡Could not found the directory to delete!')
-                return true
-            }
-
-            const deleteParams = {
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Delete: { Objects: [] }
-            }
-
-            listedObjects.Contents.forEach((content) => {
-                deleteParams.Delete.Objects.push({ Key: content.Key })
-            })
-
-            await this.awss3.deleteObjects(deleteParams).promise()
-            if (listedObjects.IsTruncated) await this.deleteBucketDirectory(dir)
-
-            return true
-        } catch (error) {
-            console.log(error)
+            const fileObject = await this.awss3.deleteObjects(awsS3Parameters).promise()
+            return fileObject
+            return false
+        } catch (e) {
+            console.log(e)
             return false
         }
     }

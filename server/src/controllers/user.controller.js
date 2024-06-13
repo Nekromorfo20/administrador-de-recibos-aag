@@ -193,7 +193,10 @@ class UserController {
             await TokenModel.destroy({ where: { id: sessionToken.id }, transaction: trans })
             await UserModel.destroy({ where: { id: userExist.id }, transaction: trans })
 
-            await awsUtil.deleteBucketDirectory(`${process.env.AWS_S3_BUCKET_RECEIPT}/${userExist.id}`)
+            const receiptsPath = receipts.map(receipt => receipt.dataValues.receiptImg)
+            const receiptsToDelete = receiptsPath.filter(receipt => receipt !== '')
+            if (receiptsToDelete.length > 0) await awsUtil.deleteBucketObjectsAndDir(receiptsToDelete)
+
             if (userExist.profileImg !== "") await awsUtil.deleteBucketObject(userExist.profileImg)
 
             await trans.commit()
@@ -201,21 +204,6 @@ class UserController {
         } catch (error) {
             console.log(error)
             await trans.rollback()
-            return res.status(500).json(responseUtil('¡Server error!', {}))
-        }
-    }
-
-    async testDeleteDir (req, res) {
-        const { awsUrlDir } = req.body
-
-        const awsUtil = new AWSUtil()
-
-        try {
-            await awsUtil.deleteBucketDirectory(awsUrlDir)
-
-            return res.status(200).json(responseUtil('¡OK!', {}))
-        } catch (error) {
-            console.log(error)
             return res.status(500).json(responseUtil('¡Server error!', {}))
         }
     }
