@@ -2,7 +2,7 @@ import sequelize from "../configs/connectionDB"
 import { UserModel, TokenModel, ReceiptModel } from "../models"
 import { responseUtil } from "../utils"
 import { UserValidator } from "../validators"
-import { encryptPassword, AWSUtil, generateRandomImageName } from "../utils"
+import { encryptPassword, AWSUtil, generateRandomImageName, generateNewToken } from "../utils"
 
 class UserController {
 
@@ -20,9 +20,8 @@ class UserController {
             let user = await UserModel.findByPk(userId, {
                 attributes: { exclude:["password", "createdDate", "updatedDate"] }
             })
-            if (!user) return res.status(404).json(responseUtil('¡Could not found the user!', {}))
 
-                user.profileImg = user.profileImg !== "" ? `${process.env.AWS_S3_BUCKET_URL}/${user.profileImg}` : user.profileImg
+            user.profileImg = user.profileImg !== "" ? `${process.env.AWS_S3_BUCKET_URL}/${user.profileImg}` : user.profileImg
 
             return res.status(200).json(responseUtil('¡OK!', user))
         } catch (error) {
@@ -70,7 +69,7 @@ class UserController {
             }, { transaction: trans })
 
             await trans.commit()
-            return res.status(200).json(responseUtil('¡User created successfully!', {}))
+            return res.status(201).json(responseUtil('¡User created successfully!', {}))
         } catch (error) {
             console.log(error)
             await trans.rollback()

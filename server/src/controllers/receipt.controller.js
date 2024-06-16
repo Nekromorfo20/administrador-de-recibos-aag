@@ -90,7 +90,7 @@ class ReceiptController {
                 if (!uploadFile || !uploadFile.fileObject) throw new Error("¡The file cannot be uploaded in AWS!")
             }
 
-            await ReceiptModel.create({
+            const newReceipt = await ReceiptModel.create({
                 userId,
                 provider,
                 title,
@@ -103,7 +103,7 @@ class ReceiptController {
             }, { transaction: trans })
 
             await trans.commit()
-            return res.status(200).json(responseUtil('¡Receipt created successfully!', {}))
+            return res.status(201).json(responseUtil('¡Receipt created successfully!', newReceipt))
         } catch (error) {
             console.log(error)
             await trans.rollback()

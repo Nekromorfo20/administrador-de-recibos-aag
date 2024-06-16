@@ -5,25 +5,28 @@ let TOKEN_TEST = ""
 
 describe("POST /api/log-in", () => {
     it("Should display validation errors", async () => {
-        const response = await request(server).post("/api/log-in").send({})
+        const response = await request(server).post("/api/log-in")
+            .send({})
         expect(response.status).toBe(400)
         expect(response.body.message).toBe("Error: The email was not provided or does not have a valid format,Error: The password was not provided or does not have a valid format")
     })
 
     it("Should display error: Email or password invalid", async () => {
-        const response = await request(server).post("/api/log-in").send({
-            email: "pedro@gmail.com",
-            password: "XXX"
-        })
+        const response = await request(server).post("/api/log-in")
+            .send({
+                email: "mfernandez@email.com",
+                password: "XXX"
+            })
         expect(response.status).toBe(400)
         expect(response.body.message).toBe("¡Email or password invalid!")
     })
 
     it("Should create a user session token", async () => {
-        const response = await request(server).post("/api/log-in").send({
-            email: "pedro@gmail.com",
-            password: "admin123"
-        })
+        const response = await request(server).post("/api/log-in")
+            .send({
+                email: "mfernandez@email.com",
+                password: "abc1234"
+            })
         expect(response.status).toBe(200)
         expect(response.body.message).toBe("¡OK!")
 
@@ -33,15 +36,17 @@ describe("POST /api/log-in", () => {
 
 describe("POST /api/refresh-token", () => {
     it("Should display validation error: Token not provided", async () => {
-        const response = await request(server).post("/api/refresh-token").send({})
+        const response = await request(server).post("/api/refresh-token")
+            .set('x-auth-token', '')
         expect(response.status).toBe(404)
         expect(response.body.message).toBe("¡Refresh token not provided!")
     })
 
     it("Should refresh a session token valid", async () => {
-        const response = await request(server).post("/api/refresh-token").send({
-            token: TOKEN_TEST
-        })
+        const response = await request(server).post("/api/refresh-token")
+            .send({
+                token: TOKEN_TEST
+            })
         expect(response.status).toBe(200)
         expect(response.body.message).toBe("¡OK!")
     })
