@@ -110,7 +110,7 @@ class TokenController {
             }, { where: { userId: tokenExist.userId }, transaction: trans })
 
             await trans.commit()
-            return res.status(200).json(responseUtil('¡Session close successfully!', {}))
+            return res.status(200).json(responseUtil('¡Session sign out successfully!', {}))
         } catch (error) {
             console.log(error)
             await trans.rollback()

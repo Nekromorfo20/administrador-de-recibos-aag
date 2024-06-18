@@ -2,6 +2,7 @@ import request from "supertest"
 import server from "../server"
 
 let TOKEN_TEST = ""
+let NEW_TOKEN_TEST = ""
 
 describe("POST /api/log-in", () => {
     it("Should display validation errors", async () => {
@@ -37,8 +38,8 @@ describe("POST /api/log-in", () => {
 describe("POST /api/refresh-token", () => {
     it("Should display validation error: Token not provided", async () => {
         const response = await request(server).post("/api/refresh-token")
-            .set('x-auth-token', '')
-        expect(response.status).toBe(404)
+            .send({})
+        expect(response.status).toBe(400)
         expect(response.body.message).toBe("¡Refresh token not provided!")
     })
 
@@ -49,6 +50,8 @@ describe("POST /api/refresh-token", () => {
             })
         expect(response.status).toBe(200)
         expect(response.body.message).toBe("¡OK!")
+
+        NEW_TOKEN_TEST = response.body.data
     })
 })
 
@@ -60,10 +63,10 @@ describe("POST /api/sign-out", () => {
         expect(response.body.message).toBe("¡Token not found!")
     })
 
-    it("Should display middleware error: Token not found", async () => {
+    it("Should sign out session", async () => {
         const response = await request(server).post("/api/sign-out")
-            .set('x-auth-token', `${TOKEN_TEST}`)
+            .set('x-auth-token', `${NEW_TOKEN_TEST}`)
         expect(response.status).toBe(200)
-        expect(response.body.message).toBe("¡Session close successfully!")
+        expect(response.body.message).toBe("¡Session sign out successfully!")
     })
 })

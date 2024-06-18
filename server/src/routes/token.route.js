@@ -82,10 +82,10 @@ router.post("/log-in", tokenController.sessionLogIn)
  *                      schema:
  *                          $ref: '#/components/schemas/SessionToken'
  *          400:
- *              description: Bad request - Email or password not provided / Email or password invalid
+ *              description: Bad request - Token to refresh not provided
  * 
  *          403:
- *              description: Forbidden - Token provided invalid
+ *              description: Forbidden - The token to refresh provided is invalid
  *          500:
  *              description: Server error
  */

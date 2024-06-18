@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">79.59% </span>
+                <span class="strong">79.24% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>78/98</span>
+                <span class='fraction'>84/106</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">71.42% </span>
+                <span class="strong">69.56% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>30/42</span>
+                <span class='fraction'>32/46</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.7% </span>
+                <span class="strong">82.95% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>67/82</span>
+                <span class='fraction'>73/88</span>
             </div>
         
             
@@ -269,7 +269,16 @@
 <a name='L204'></a><a href='#L204'>204</a>
 <a name='L205'></a><a href='#L205'>205</a>
 <a name='L206'></a><a href='#L206'>206</a>
-<a name='L207'></a><a href='#L207'>207</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -292,7 +301,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -315,6 +324,9 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -376,6 +388,9 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -453,6 +468,9 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -516,9 +534,12 @@ class ReceiptController {
     */
     async getReceipt (req, res) {
        const { userId } = req.user
-       const { id } = req.query
+       let { id } = req.query
 &nbsp;
        if (!id) return res.status(400).json(responseUtil('¡You must provide the id for search a receipt!', {}))
+&nbsp;
+        id = Number(id)
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (isNaN(id)) <span class="cstat-no" title="statement not covered" >return res.status(400).json(responseUtil('¡Id provided invalid!', {}))</span>
 &nbsp;
         try {
 &nbsp;
@@ -567,7 +588,7 @@ class ReceiptController {
                 <span class="missing-if-branch" title="if path not taken" >I</span>if (!uploadFile || !uploadFile.fileObject) <span class="cstat-no" title="statement not covered" >throw new Error("¡The file cannot be uploaded in AWS!")</span>
             }
 &nbsp;
-            const newReceipt = await ReceiptModel.create({
+            let newReceipt = await ReceiptModel.create({
                 userId,
                 provider,
                 title,
@@ -578,6 +599,9 @@ class ReceiptController {
                 receiptDate,
                 receiptImg: pathAWS
             }, { transaction: trans })
+&nbsp;
+            delete newReceipt.dataValues.createdDate
+            delete newReceipt.dataValues.updatedDate
 &nbsp;
             await trans.commit()
             return res.status(201).json(responseUtil('¡Receipt created successfully!', newReceipt))
@@ -656,9 +680,12 @@ class ReceiptController {
     */
     async deleteReceipt (req, res) {
         const { userId } = req.user
-        const { id } = req.query
+        let { id } = req.body
 &nbsp;
         if (!id) return res.status(400).json(responseUtil('¡You must provide the id for delete a receipt!', {}))
+&nbsp;
+        id = Number(id)
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (isNaN(id)) <span class="cstat-no" title="statement not covered" >return res.status(400).json(responseUtil('¡Id provided invalid!', {}))</span>
 &nbsp;
         const trans = await sequelize.transaction()
         const awsUtil = new AWSUtil()
@@ -688,7 +715,7 @@ export default ReceiptController</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-06-16T09:44:46.443Z
+                at 2024-06-18T10:35:55.612Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
