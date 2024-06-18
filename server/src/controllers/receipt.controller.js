@@ -39,9 +39,12 @@ class ReceiptController {
     */
     async getReceipt (req, res) {
        const { userId } = req.user
-       const { id } = req.query
+       let { id } = req.query
 
        if (!id) return res.status(400).json(responseUtil('¡You must provide the id for search a receipt!', {}))
+
+        id = Number(id)
+        if (isNaN(id)) return res.status(400).json(responseUtil('¡Id provided invalid!', {}))
 
         try {
 
@@ -90,7 +93,7 @@ class ReceiptController {
                 if (!uploadFile || !uploadFile.fileObject) throw new Error("¡The file cannot be uploaded in AWS!")
             }
 
-            const newReceipt = await ReceiptModel.create({
+            let newReceipt = await ReceiptModel.create({
                 userId,
                 provider,
                 title,
@@ -101,6 +104,9 @@ class ReceiptController {
                 receiptDate,
                 receiptImg: pathAWS
             }, { transaction: trans })
+
+            delete newReceipt.dataValues.createdDate
+            delete newReceipt.dataValues.updatedDate
 
             await trans.commit()
             return res.status(201).json(responseUtil('¡Receipt created successfully!', newReceipt))
@@ -179,9 +185,12 @@ class ReceiptController {
     */
     async deleteReceipt (req, res) {
         const { userId } = req.user
-        const { id } = req.query
+        let { id } = req.body
 
         if (!id) return res.status(400).json(responseUtil('¡You must provide the id for delete a receipt!', {}))
+
+        id = Number(id)
+        if (isNaN(id)) return res.status(400).json(responseUtil('¡Id provided invalid!', {}))
 
         const trans = await sequelize.transaction()
         const awsUtil = new AWSUtil()

@@ -62,7 +62,7 @@ class TokenController {
     async refreshToken (req, res) {
         const { token } = req.body
 
-        if (!token) return res.status(404).json(responseUtil('¡Refresh token not provided!', {}))
+        if (!token) return res.status(400).json(responseUtil('¡Refresh token not provided!', {}))
 
         const trans = await sequelize.transaction()
 

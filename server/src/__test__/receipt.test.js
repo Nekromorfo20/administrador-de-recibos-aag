@@ -197,7 +197,7 @@ describe("DELETE /api/receipt", () => {
     it("Should display error: You must provide id", async () => {
         const response = await request(server).delete("/api/receipt")
             .set('x-auth-token', `${TOKEN_TEST}`)
-            .query({})
+            .send({})
         expect(response.status).toBe(400)
         expect(response.body.message).toBe("¡You must provide the id for delete a receipt!")
     })
@@ -205,8 +205,8 @@ describe("DELETE /api/receipt", () => {
     it("Should display error: Could not found the receipt", async () => {
         const response = await request(server).delete("/api/receipt")
             .set('x-auth-token', `${TOKEN_TEST}`)
-            .query({
-                id: 0
+            .send({
+                id: -1
             })
         expect(response.status).toBe(404)
         expect(response.body.message).toBe("¡Could not found the receipt with id provided!")
@@ -215,7 +215,7 @@ describe("DELETE /api/receipt", () => {
     it("Should delete an existing receipt", async () => {
         const response = await request(server).delete("/api/receipt")
             .set('x-auth-token', `${TOKEN_TEST}`)
-            .query({
+            .send({
                 id: NEW_RECEIPT_ID
             })
         expect(response.status).toBe(200)
