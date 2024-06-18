@@ -3,6 +3,8 @@ import colors from "colors"
 import cors from "cors"
 import morgan from "morgan"
 import fileUpload from "express-fileupload"
+import swaggerUi from "swagger-ui-express"
+import swaggerSpec, { swaggerUiOptions } from "./configs/swagger"
 import db from "./configs/connectionDB"
 import routerReceipt from "./routes/receipt.route"
 import routerUser from "./routes/user.route"
@@ -16,7 +18,7 @@ const corsOptions = {
     credentials: ENV.API_CORS_CREDENTIALS
 }
 
-// Configuration server express, cors and morgan
+/* Configuration server express, cors and morgan */
 server.use(express.json({ extended: true }))
 server.use(express.urlencoded({ extended: true }))
 server.use(cors(corsOptions))
@@ -40,5 +42,8 @@ connectDB()
 server.use(ENV.API_PREFIX, routerReceipt)
 server.use(ENV.API_PREFIX, routerUser)
 server.use(ENV.API_PREFIX, routerToken)
+
+/* Swagger API documentation */
+server.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions))
 
 export default server

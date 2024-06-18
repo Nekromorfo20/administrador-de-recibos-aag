@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon -r esm src/index.js",
     "test": "jest --detectOpenHandles --forceExit",
+    "test:coverage": "jest --detectOpenHandles --forceExit --coverage",
     "clear": "node -r esm src/configs/clearDB.js --clear"
   },
   "author": "Alan Aguilar",

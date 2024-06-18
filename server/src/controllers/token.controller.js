@@ -62,7 +62,7 @@ class TokenController {
     async refreshToken (req, res) {
         const { token } = req.body
 
-        if (!token) return res.status(404).json(responseUtil('¡Refresh token not provided!', {}))
+        if (!token) return res.status(400).json(responseUtil('¡Refresh token not provided!', {}))
 
         const trans = await sequelize.transaction()
 
@@ -110,7 +110,7 @@ class TokenController {
             }, { where: { userId: tokenExist.userId }, transaction: trans })
 
             await trans.commit()
-            return res.status(200).json(responseUtil('¡Session close successfully!', {}))
+            return res.status(200).json(responseUtil('¡Session sign out successfully!', {}))
         } catch (error) {
             console.log(error)
             await trans.rollback()
